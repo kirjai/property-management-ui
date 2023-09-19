@@ -17,6 +17,7 @@ const config: Config = {
         primary: "rgb(221, 124,	64)",
         "primary-dark": "rgb(216, 118, 61)",
         "primary-gradient-from": "rgb(221, 114,	59)",
+        "off-grey": "rgb(242, 244, 245)",
       },
     },
   },
