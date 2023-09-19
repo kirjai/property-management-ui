@@ -9,12 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@effect/schema": "^0.36.2",
+    "@supabase/auth-helpers-nextjs": "^0.8.1",
+    "@supabase/supabase-js": "^2.33.2",
     "@types/node": "20.6.2",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
+    "effect": "^2.0.0-next.34",
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
+    "lucide-react": "^0.279.0",
     "next": "13.4.19",
     "postcss": "8.4.30",
     "react": "18.2.0",
