@@ -26,7 +26,7 @@ export const Errors = () => {
       {error ? (
         <p className="text-red-700 flex flex-col">
           <span className="font-medium">
-            There's been a problem signing you in. Please try again.
+            There has been a problem signing you in. Please try again.
           </span>
           <span>{error}</span>
         </p>

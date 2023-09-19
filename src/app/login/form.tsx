@@ -21,7 +21,7 @@ export function LoginForm() {
         <>
           <div className="text-center font-semibold">
             <h1 className="text-xl">Welcome back</h1>
-            <p>Let's get you signed in!</p>
+            <p>Let us get you signed in!</p>
           </div>
 
           <form
