@@ -1,0 +1,25 @@
+# .github/workflows/scheduled-builds.yml
+name: Initiate snapshot on a CRON schedule
+
+on:
+  push
+  # schedule:
+  # Runs "At minute 0 past every 4th hour." (see https://crontab.guru)
+  # - cron: "0 */4 * * *"
+jobs:
+  run-script:
+    name: Run events sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - run: npm i
+
+      - name: HTTP Request Action
+        uses: fjogeleit/http-request-action@v1.14.1
+        with:
+          url: https://property-management-ui-one.vercel.app/api/event-sync
+          method: "GET"

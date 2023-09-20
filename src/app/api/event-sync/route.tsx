@@ -12,6 +12,8 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 const DRY_RUN = false;
 
 const queryPlatformPropertyToProcess = (supabase: SupabaseClient) =>
@@ -116,7 +118,7 @@ type DBEvent = {
 export async function GET() {
   const supabase = createRouteHandlerClient({ cookies });
 
-  return Effect.runPromise(
+  return await Effect.runPromise(
     queryPlatformPropertyToProcess(supabase).pipe(
       Effect.flatMap((propertyPlatform) =>
         Effect.fromNullable(propertyPlatform).pipe(
