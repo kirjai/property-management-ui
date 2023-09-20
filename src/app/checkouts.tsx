@@ -5,13 +5,15 @@ import isSameDay from "date-fns/isSameDay";
 
 export const Checkouts = ({
   claimedCheckouts,
+  date,
 }: {
   claimedCheckouts: readonly ClaimedCheckout[];
+  date: Date;
 }) => {
   return (
     <>
       {new Array(3).fill(0).map((_, i) => {
-        const day = addDays(new Date(), i);
+        const day = addDays(date, i);
         const isToday = i === 0;
         const heading = isToday
           ? "Today"
