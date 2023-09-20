@@ -15,6 +15,7 @@ const ClaimedCheckout = S.struct({
   role: S.literal("admin"),
   organization_name: S.string,
   property_name: S.string,
+  property_color: S.string.pipe(S.nonEmpty()),
 });
 
 export type ClaimedCheckout = S.Schema.To<typeof ClaimedCheckout>;
@@ -26,8 +27,6 @@ export const getClaimedCheckouts =
       supabaseEffect(() =>
         supabase.rpc("get_calendar_events", {
           user_id: userId,
-          // start_date: "2021-01-01",
-          // end_date: "2025-12-31",
           start_date: format(fromDate, "yyyy-MM-dd"),
           end_date: format(toDate, "yyyy-MM-dd"),
         })
@@ -154,5 +153,31 @@ export const getAdminProperties =
           );
         })
       )
+    );
+  };
+
+const UnclaimedCheckout = S.struct({
+  event_id: S.number,
+  event: S.any,
+  event_start: S.string.pipe(S.dateFromString),
+  event_end: S.string.pipe(S.dateFromString),
+  property_platform: S.number,
+  property_id: S.number,
+  property_name: S.string,
+  property_color: S.string.pipe(S.nonEmpty()),
+});
+export type UnclaimedCheckout = S.Schema.To<typeof UnclaimedCheckout>;
+
+export const getAdminUnclaimedCheckouts =
+  (supabase: SupabaseClient) =>
+  (userId: string, fromDate: Date, toDate: Date) => {
+    return Effect.runPromise(
+      supabaseEffect(() =>
+        supabase.rpc("get_admin_calendar_events", {
+          user_id: userId,
+          start_date: format(fromDate, "yyyy-MM-dd"),
+          end_date: format(toDate, "yyyy-MM-dd"),
+        })
+      ).pipe(Effect.flatMap(S.parseEither(S.array(UnclaimedCheckout))))
     );
   };

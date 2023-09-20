@@ -11,6 +11,9 @@ const FormValues = S.struct({
 
 const parse = S.parseEither(FormValues);
 
+export type ErrorTag = "signup" | "generic";
+export type MessageTag = "success";
+
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
@@ -38,23 +41,28 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    const message =
+    const errorTag: ErrorTag =
       error.message === "Signups not allowed for this instance"
-        ? "Email address not recognized. If you think this is a mistake - please check the email address and try again."
-        : error.message;
+        ? "signup"
+        : "generic";
+
+    const sp = new URLSearchParams();
+    sp.append("error", errorTag);
+    if (errorTag === "generic") sp.append("error_message", error.message);
 
     return NextResponse.redirect(
-      `${requestUrl.origin}/login?error=${message}`,
+      `${requestUrl.origin}/login?${sp.toString()}`,
       {
         status: 301,
       }
     );
   }
 
-  return NextResponse.redirect(
-    `${requestUrl.origin}/login?message=Please check your email and click the login link in the email to continue.`,
-    {
-      status: 301,
-    }
-  );
+  const message: MessageTag = "success";
+  const sp = new URLSearchParams();
+  sp.append("message", message);
+
+  return NextResponse.redirect(`${requestUrl.origin}/login?${sp.toString()}`, {
+    status: 301,
+  });
 }

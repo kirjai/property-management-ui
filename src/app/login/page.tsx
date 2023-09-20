@@ -19,7 +19,13 @@ export default async function Login() {
         {/* illustration? */}
 
         <div className="bg-white rounded-3xl rounded-b-none sm:rounded-b-3xl p-7 py-10 flex flex-col gap-6 sm:w-[500px]">
-          <LoginForm />
+          <form
+            className="flex flex-col gap-4"
+            action="/auth/login"
+            method="post"
+          >
+            <LoginForm />
+          </form>
         </div>
       </div>
     </main>
