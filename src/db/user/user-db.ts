@@ -8,32 +8,6 @@ import * as O from "@effect/data/Option";
 import isSameDay from "date-fns/isSameDay";
 import groupBy from "lodash/groupBy";
 
-const ClaimedCheckout = S.struct({
-  calendar_event_id: S.number,
-  event: S.any,
-  calendar_event_end: S.string.pipe(S.dateFromString),
-  role: S.literal("admin"),
-  organization_name: S.string,
-  property_name: S.string,
-  property_color: S.string.pipe(S.nonEmpty()),
-});
-
-export type ClaimedCheckout = S.Schema.To<typeof ClaimedCheckout>;
-
-export const getClaimedCheckouts =
-  (supabase: SupabaseClient) =>
-  (userId: string, fromDate: Date, toDate: Date) => {
-    return Effect.runPromise(
-      supabaseEffect(() =>
-        supabase.rpc("get_calendar_events", {
-          user_id: userId,
-          start_date: format(fromDate, "yyyy-MM-dd"),
-          end_date: format(toDate, "yyyy-MM-dd"),
-        })
-      ).pipe(Effect.flatMap(S.parseEither(S.array(ClaimedCheckout))))
-    );
-  };
-
 const DBAdminProperty = S.struct({
   property_id: S.number,
   property_name: S.string,
@@ -156,7 +130,7 @@ export const getAdminProperties =
     );
   };
 
-const UnclaimedCheckout = S.struct({
+const UserCheckoutView = S.struct({
   event_id: S.number,
   event: S.any,
   event_start: S.string.pipe(S.dateFromString),
@@ -165,19 +139,25 @@ const UnclaimedCheckout = S.struct({
   property_id: S.number,
   property_name: S.string,
   property_color: S.string.pipe(S.nonEmpty()),
+  claiming_user_id: S.union(S.string, S.null),
 });
-export type UnclaimedCheckout = S.Schema.To<typeof UnclaimedCheckout>;
 
-export const getAdminUnclaimedCheckouts =
+export const getCheckoutsForUser =
   (supabase: SupabaseClient) =>
-  (userId: string, fromDate: Date, toDate: Date) => {
+  (
+    userId: string,
+    dates: {
+      fromDate: Date;
+      toDate: Date;
+    }
+  ) => {
     return Effect.runPromise(
       supabaseEffect(() =>
-        supabase.rpc("get_admin_calendar_events", {
+        supabase.rpc("get_user_checkouts_view_for_date_range", {
           user_id: userId,
-          start_date: format(fromDate, "yyyy-MM-dd"),
-          end_date: format(toDate, "yyyy-MM-dd"),
+          start_date: format(dates.fromDate, "yyyy-MM-dd"),
+          end_date: format(dates.toDate, "yyyy-MM-dd"),
         })
-      ).pipe(Effect.flatMap(S.parseEither(S.array(UnclaimedCheckout))))
+      ).pipe(Effect.flatMap(S.parseEither(S.array(UserCheckoutView))))
     );
   };

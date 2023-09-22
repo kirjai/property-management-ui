@@ -45,7 +45,7 @@ export default async function Home() {
                 <h3 className="font-bold text-xl">Your check-outs</h3>
               </div>
 
-              <div className="flex overflow-x-auto gap-3 px-4 pb-2">
+              <div className="flex overflow-x-auto gap-3 px-4 pb-2 items-stretch min-h-[150px]">
                 <Suspense fallback={<CheckoutsFallback />}>
                   <Checkouts date={date} user={user} />
                 </Suspense>
