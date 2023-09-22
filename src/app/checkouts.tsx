@@ -63,18 +63,21 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
                     {claimed.length > 0 ? (
                       <>
                         {claimed.map((checkout) => {
-                          const isDark = Color(
-                            checkout.property_color
-                          ).isDark();
+                          const isDark = checkout.property_color
+                            ? Color(checkout.property_color).isDark()
+                            : false;
 
                           return (
                             <p
                               key={checkout.event_id}
                               className={`text-sm px-4 py-2 font-medium ${
                                 isDark ? "text-white" : "text-black"
+                              } ${
+                                !checkout.property_color ? "bg-stone-400" : ""
                               }`}
                               style={{
-                                backgroundColor: checkout.property_color,
+                                backgroundColor:
+                                  checkout.property_color ?? undefined,
                               }}
                             >
                               {checkout.property_name}
@@ -98,7 +101,9 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
                     </span>
                     <div>
                       {unclaimed.map((checkout) => {
-                        const isDark = Color(checkout.property_color).isDark();
+                        const isDark = checkout.property_color
+                          ? Color(checkout.property_color).isDark()
+                          : false;
 
                         return (
                           <div
@@ -109,10 +114,12 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
                                 : ""
                             } ${
                               isDark ? "text-white" : "text-black"
-                            } px-4 py-2 text-sm font-medium`}
+                            } px-4 py-2 text-sm font-medium ${
+                              !checkout.property_color ? "bg-stone-400" : ""
+                            }`}
                             style={{
                               backgroundColor: !isToday
-                                ? checkout.property_color
+                                ? checkout.property_color ?? undefined
                                 : "",
                             }}
                           >

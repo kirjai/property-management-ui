@@ -138,7 +138,7 @@ const UserCheckoutView = S.struct({
   property_platform: S.number,
   property_id: S.number,
   property_name: S.string,
-  property_color: S.string.pipe(S.nonEmpty()),
+  property_color: S.union(S.string.pipe(S.nonEmpty()), S.null),
   claiming_user_id: S.union(S.string, S.null),
 });
 
