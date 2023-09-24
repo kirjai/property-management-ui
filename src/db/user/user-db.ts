@@ -142,6 +142,8 @@ const UserCheckoutView = S.struct({
   claiming_user_id: S.union(S.string, S.null),
 });
 
+export type UserCheckoutView = S.Schema.To<typeof UserCheckoutView>;
+
 export const getCheckoutsForUser =
   (supabase: SupabaseClient) =>
   (

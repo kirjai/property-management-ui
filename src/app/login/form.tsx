@@ -27,7 +27,7 @@ export const LoginForm = () => {
         <p>Let us get you signed in!</p>
       </div>
 
-      <div>
+      <div className="flex flex-col gap-4">
         <fieldset disabled={pending}>
           <div className="flex flex-col gap-1">
             <label htmlFor="email">Email</label>

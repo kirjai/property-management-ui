@@ -148,7 +148,7 @@ export const CheckoutsFallback = () => {
         return (
           <div
             key={i}
-            className="min-w-[200px] min-h-[150px] bg-white animate-pulse rounded-2xl"
+            className="min-w-[200px] bg-white animate-pulse rounded-2xl"
           >
             &nbsp;
           </div>
