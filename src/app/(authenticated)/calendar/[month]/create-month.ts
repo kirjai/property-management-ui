@@ -25,7 +25,8 @@ export const createMonthRange = (date: Date) => {
 export const createCalendarMonth = (
   { start, end }: { start: Date; end: Date },
   date: Date,
-  checkouts: readonly UserCheckoutView[]
+  checkouts: readonly UserCheckoutView[],
+  selectedDay?: Date
 ) => {
   const diff = Math.abs(differenceInDays(start, end));
 
@@ -35,7 +36,8 @@ export const createCalendarMonth = (
     // const checkins = findCheckinsForDay(_date, checkouts);
 
     return {
-      date: format(_date, "yyyy-MM-dd"),
+      formattedDate: format(_date, "yyyy-MM-dd"),
+      date: _date,
       checkouts: _checkouts.map((checkout) => {
         return {
           id: `${_date.toString()}+${checkout.property_name}`,
@@ -45,7 +47,7 @@ export const createCalendarMonth = (
           event: checkout,
         };
       }),
-      isSelected: false,
+      isSelected: selectedDay ? isSameDay(_date, selectedDay) : false,
       isCurrentMonth: isSameMonth(_date, date),
       isToday: isSameDay(_date, new Date()),
     };

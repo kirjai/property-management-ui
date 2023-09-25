@@ -4,13 +4,15 @@ import addMonths from "date-fns/addMonths";
 import format from "date-fns/format";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { MonthParam } from "./month-param";
-import * as S from "@effect/schema/Schema";
-import * as E from "@effect/data/Either";
 import { calendarRoute } from "@/app-routes";
+import * as S from "@effect/schema/Schema";
+import { DayParam } from "./day-param";
+import * as O from "@effect/data/Option";
+import Color from "color";
 
 type Day = {
-  date: string;
+  formattedDate: string;
+  date: Date;
   checkouts: {
     id: string;
     name: string;
@@ -25,20 +27,17 @@ type Day = {
 
 export const Calendar = ({ days, date }: { days: Day[]; date: Date }) => {
   const selectedDay = days.find((day) => day.isSelected);
-  const nextMonth = S.encodeEither(MonthParam)(addMonths(date, 1));
-  const previousMonth = S.encodeEither(MonthParam)(addMonths(date, -1));
-  const todayLink = S.encodeEither(MonthParam)(new Date());
 
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
       <header className="flex items-center justify-between border-b border-stone-200 px-6 py-4 lg:flex-none">
         <h3 className="font-bold text-xl">
           <time dateTime={`${format(date, "yyyy-MM")}`}>
-            {format(date, "MMMM yyyy")}
+            Checkouts {format(date, "MMMM yyyy")}
           </time>
         </h3>
         <div className="flex items-center">
-          <div className="relative flex items-center rounded-md bg-white shadow-sm md:items-stretch">
+          <div className="relative flex items-center rounded-md bg-white md:items-stretch">
             <Link
               href={calendarRoute(addMonths(date, -1))}
               className="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-stone-300 pr-1 text-stone-400 hover:text-stone-500 focus:relative md:w-9 md:pr-0 md:hover:bg-stone-50"
@@ -92,97 +91,121 @@ export const Calendar = ({ days, date }: { days: Day[]; date: Date }) => {
           <div className="hidden w-full lg:grid lg:grid-cols-7 lg:auto-rows-fr lg:gap-px">
             {days.map((day) => (
               <div
-                key={day.date}
+                key={day.formattedDate}
                 className={classNames(
                   day.isCurrentMonth
                     ? "bg-white"
                     : "bg-stone-50 text-stone-500",
-                  "relative px-3 py-2"
+                  "relative py-2"
                 )}
               >
-                <time
-                  dateTime={day.date}
-                  className={
-                    day.isToday
-                      ? "flex h-6 w-6 items-center justify-center rounded-full bg-primary font-semibold text-white"
-                      : undefined
-                  }
-                >
-                  {day.date.split("-").pop()?.replace(/^0/, "") ?? null}
-                </time>
+                <span className="px-3 flex">
+                  <time
+                    dateTime={day.formattedDate}
+                    className={
+                      day.isToday
+                        ? "flex h-6 w-6 items-center justify-center rounded-full bg-primary font-semibold text-white"
+                        : undefined
+                    }
+                  >
+                    {day.formattedDate.split("-").pop()?.replace(/^0/, "") ??
+                      null}
+                  </time>
+                </span>
                 {day.checkouts.length > 0 && (
                   <ol className="mt-2">
-                    {day.checkouts.slice(0, 2).map((event) => (
-                      <li key={event.id}>
-                        <a href={"#"} className="group flex">
-                          <p className="flex-auto truncate font-medium text-stone-900 group-hover:text-primary">
-                            {event.name}
-                          </p>
-                          {/* <time
+                    {/* <CalendarDayCheckouts checkouts={day.checkouts} /> */}
+
+                    {day.checkouts.map((event) => {
+                      const isDark = event.color
+                        ? Color(event.color).isDark()
+                        : false;
+
+                      return (
+                        <li key={event.id}>
+                          <a href={"#"} className="group flex">
+                            <span
+                              className={classNames(
+                                "flex-auto truncate font-medium text-stone-900  px-3",
+                                isDark ? "text-white" : "text-black",
+                                !event.color ? "bg-stone-400" : ""
+                              )}
+                              style={{
+                                backgroundColor: event.color ?? undefined,
+                              }}
+                            >
+                              {event.name}
+                            </span>
+                            {/* <time
                             dateTime={event.datetime}
                             className="ml-3 hidden flex-none text-stone-500 group-hover:text-indigo-600 xl:block"
                           >
                             {event.time}
                           </time> */}
-                        </a>
-                      </li>
-                    ))}
-                    {day.checkouts.length > 2 && (
-                      <li className="text-stone-500">
-                        + {day.checkouts.length - 2} more
-                      </li>
-                    )}
+                          </a>
+                        </li>
+                      );
+                    })}
                   </ol>
                 )}
               </div>
             ))}
           </div>
           <div className="isolate grid w-full grid-cols-7 gap-px auto-rows-fr lg:hidden">
-            {days.map((day) => (
-              <button
-                key={day.date}
-                type="button"
-                className={classNames(
-                  day.isCurrentMonth ? "bg-white" : "bg-stone-50",
-                  (day.isSelected || day.isToday) && "font-semibold",
-                  day.isSelected && "text-white",
-                  !day.isSelected && day.isToday && "text-primary",
-                  !day.isSelected &&
-                    day.isCurrentMonth &&
-                    !day.isToday &&
-                    "text-stone-900",
-                  !day.isSelected &&
-                    !day.isCurrentMonth &&
-                    !day.isToday &&
-                    "text-stone-500",
-                  "flex h-14 flex-col px-3 py-2 hover:bg-stone-100 focus:z-10"
-                )}
-              >
-                <time
-                  dateTime={day.date}
+            {days.map((day) => {
+              const dayParam = S.encodeOption(DayParam)(day.date);
+              const params = new URLSearchParams();
+              if (O.isSome(dayParam)) {
+                params.append("day", dayParam.value);
+              }
+
+              return (
+                <Link
+                  href={`?${params.toString()}`}
+                  key={day.formattedDate}
                   className={classNames(
-                    day.isSelected &&
-                      "flex h-6 w-6 items-center justify-center rounded-full",
-                    day.isSelected && day.isToday && "bg-indigo-600",
-                    day.isSelected && !day.isToday && "bg-stone-900",
-                    "ml-auto"
+                    day.isCurrentMonth ? "bg-white" : "bg-stone-50",
+                    (day.isSelected || day.isToday) && "font-semibold",
+                    day.isSelected && "text-white",
+                    !day.isSelected && day.isToday && "text-primary",
+                    !day.isSelected &&
+                      day.isCurrentMonth &&
+                      !day.isToday &&
+                      "text-stone-900",
+                    !day.isSelected &&
+                      !day.isCurrentMonth &&
+                      !day.isToday &&
+                      "text-stone-500",
+                    "flex h-14 flex-col px-3 py-2 hover:bg-stone-100 focus:z-10"
                   )}
                 >
-                  {day.date.split("-").pop()?.replace(/^0/, "") ?? null}
-                </time>
-                <span className="sr-only">{day.checkouts.length} events</span>
-                {day.checkouts.length > 0 && (
-                  <span className="-mx-0.5 mt-auto flex flex-wrap-reverse">
-                    {day.checkouts.map((checkout) => (
-                      <span
-                        key={checkout.id}
-                        className="mx-0.5 mb-1 h-1.5 w-1.5 rounded-full bg-stone-400"
-                      />
-                    ))}
-                  </span>
-                )}
-              </button>
-            ))}
+                  <time
+                    dateTime={day.formattedDate}
+                    className={classNames(
+                      day.isSelected &&
+                        "flex h-6 w-6 items-center justify-center rounded-full",
+                      day.isSelected && day.isToday && "bg-primary",
+                      day.isSelected && !day.isToday && "bg-stone-900",
+                      "ml-auto"
+                    )}
+                  >
+                    {day.formattedDate.split("-").pop()?.replace(/^0/, "") ??
+                      null}
+                  </time>
+                  <span className="sr-only">{day.checkouts.length} events</span>
+                  {day.checkouts.length > 0 && (
+                    <span className="-mx-0.5 mt-auto flex flex-wrap-reverse">
+                      {day.checkouts.map((checkout) => (
+                        <span
+                          key={checkout.id}
+                          className="mx-0.5 mb-1 h-1.5 w-1.5 rounded-full bg-stone-400"
+                        />
+                      ))}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -190,7 +213,7 @@ export const Calendar = ({ days, date }: { days: Day[]; date: Date }) => {
         <>
           {selectedDay.checkouts.length > 0 && (
             <div className="px-4 py-10 sm:px-6 lg:hidden">
-              <ol className="divide-y divide-stone-100 overflow-hidden rounded-lg bg-white text-sm shadow ring-1 ring-black ring-opacity-5">
+              <ol className="divide-y divide-stone-100 overflow-hidden rounded-lg bg-white text-sm ring-1 ring-black ring-opacity-5">
                 {selectedDay.checkouts.map((checkout) => (
                   <li
                     key={checkout.id}
@@ -212,7 +235,7 @@ export const Calendar = ({ days, date }: { days: Day[]; date: Date }) => {
                       </time> */}
                     </div>
                     <a
-                      href={""}
+                      // href={""}
                       className="ml-6 flex-none self-center rounded-md bg-white px-3 py-2 font-semibold text-stone-900 opacity-0 shadow-sm ring-1 ring-inset ring-stone-300 hover:ring-stone-400 focus:opacity-100 group-hover:opacity-100"
                     >
                       Edit<span className="sr-only">, {checkout.name}</span>

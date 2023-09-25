@@ -5,17 +5,18 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { MonthParam } from "./month-param";
 import * as S from "@effect/schema/Schema";
-import startOfMonth from "date-fns/startOfMonth";
 import * as E from "@effect/data/Either";
-import endOfMonth from "date-fns/endOfMonth";
-import groupBy from "lodash/groupBy";
+import * as O from "@effect/data/Option";
 import { createCalendarMonth, createMonthRange } from "./create-month";
 import { Calendar } from "./Calendar";
+import { DayParam } from "./day-param";
 
 export default async function CalendarPage({
   params,
+  searchParams,
 }: {
   params: { month: string };
+  searchParams: Record<string, string>;
 }) {
   const supabase = createServerComponentClient({ cookies });
   const {
@@ -33,18 +34,21 @@ export default async function CalendarPage({
     toDate: end,
   });
 
+  const selectedDay = S.parseOption(DayParam)(searchParams.day);
+
   const calendarDays = createCalendarMonth(
     {
       start,
       end,
     },
     monthDate.right,
-    checkouts
+    checkouts,
+    O.getOrUndefined(selectedDay)
   );
 
   return (
     <div className="h-full bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:bg-transparent sm:p-6">
-      <div className="bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:shadow-sm">
+      <div className="bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:shadow-sm pb-6">
         <Calendar days={calendarDays} date={monthDate.right} />
       </div>
     </div>
