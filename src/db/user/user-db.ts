@@ -7,6 +7,7 @@ import { supabaseEffect } from "@/supabase/supabase";
 import * as O from "@effect/data/Option";
 import isSameDay from "date-fns/isSameDay";
 import groupBy from "lodash/groupBy";
+import { OrganizationRole } from "./OrganizationRole";
 
 const DBAdminProperty = S.struct({
   property_id: S.number,
@@ -140,6 +141,7 @@ const UserCheckoutView = S.struct({
   property_name: S.string,
   property_color: S.union(S.string.pipe(S.nonEmpty()), S.null),
   claiming_user_id: S.union(S.string, S.null),
+  organization_role: OrganizationRole,
 });
 
 export type UserCheckoutView = S.Schema.To<typeof UserCheckoutView>;

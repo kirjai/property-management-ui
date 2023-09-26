@@ -1,32 +1,48 @@
-import { UserCheckoutView } from "@/db/user/user-db";
 import classNames from "classnames";
 import addMonths from "date-fns/addMonths";
 import format from "date-fns/format";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogIn } from "lucide-react";
 import Link from "next/link";
 import { calendarRoute } from "@/app-routes";
 import * as S from "@effect/schema/Schema";
 import { DayParam } from "./day-param";
 import * as O from "@effect/data/Option";
 import Color from "color";
+import { PropertyDayState } from "@/components/PropertyDayState";
+import * as Match from "@effect/match";
+import { CalendarDay } from "./create-month";
+import { pipe } from "@effect/data/Function";
+import differenceInDays from "date-fns/differenceInDays";
 
-type Day = {
-  formattedDate: string;
-  date: Date;
-  checkouts: {
-    id: string;
-    name: string;
-    color: string | null;
-    datetime: string;
-    event: UserCheckoutView;
-  }[];
-  isSelected: boolean;
-  isCurrentMonth: boolean;
-  isToday: boolean;
+const checkoutProperties = (properties: CalendarDay["properties"]) =>
+  properties.filter(
+    (
+      p
+    ): p is typeof p & ({ _tag: "checkout" } | { _tag: "checkin-checkout" }) =>
+      p._tag === "checkout" || p._tag === "checkin-checkout"
+  );
+
+const adminPropertiesFilter = (properties: CalendarDay["properties"]) => {
+  return properties.filter((property) => {
+    const role = property.property.organizationRole;
+
+    if (role === "admin") return true;
+
+    return property._tag === "checkout" || property._tag === "checkin-checkout";
+  });
 };
 
-export const Calendar = ({ days, date }: { days: Day[]; date: Date }) => {
+export const Calendar = ({
+  days,
+  date,
+}: {
+  days: CalendarDay[];
+  date: Date;
+}) => {
   const selectedDay = days.find((day) => day.isSelected);
+  const selectedDayProperties = adminPropertiesFilter(
+    selectedDay?.properties ?? []
+  );
 
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
@@ -89,67 +105,85 @@ export const Calendar = ({ days, date }: { days: Day[]; date: Date }) => {
         </div>
         <div className="flex bg-stone-200 text-xs leading-6 text-stone-700 lg:flex-auto">
           <div className="hidden w-full lg:grid lg:grid-cols-7 lg:auto-rows-fr lg:gap-px">
-            {days.map((day) => (
-              <div
-                key={day.formattedDate}
-                className={classNames(
-                  day.isCurrentMonth
-                    ? "bg-white"
-                    : "bg-stone-50 text-stone-500",
-                  "relative py-2"
-                )}
-              >
-                <span className="px-3 flex">
-                  <time
-                    dateTime={day.formattedDate}
-                    className={
-                      day.isToday
-                        ? "flex h-6 w-6 items-center justify-center rounded-full bg-primary font-semibold text-white"
-                        : undefined
-                    }
-                  >
-                    {day.formattedDate.split("-").pop()?.replace(/^0/, "") ??
-                      null}
-                  </time>
-                </span>
-                {day.checkouts.length > 0 && (
-                  <ol className="mt-2">
-                    {/* <CalendarDayCheckouts checkouts={day.checkouts} /> */}
+            {days.map((day) => {
+              const checkouts = checkoutProperties(day.properties);
 
-                    {day.checkouts.map((event) => {
-                      const isDark = event.color
-                        ? Color(event.color).isDark()
-                        : false;
+              return (
+                <div
+                  key={day.formattedDate}
+                  className={classNames(
+                    day.isCurrentMonth
+                      ? "bg-white"
+                      : "bg-stone-50 text-stone-500",
+                    "relative py-2"
+                  )}
+                >
+                  <span className="px-3 flex">
+                    <time
+                      dateTime={day.formattedDate}
+                      className={
+                        day.isToday
+                          ? "flex h-6 w-6 items-center justify-center rounded-full bg-primary font-semibold text-white"
+                          : undefined
+                      }
+                    >
+                      {day.formattedDate.split("-").pop()?.replace(/^0/, "") ??
+                        null}
+                    </time>
+                  </span>
+                  {checkouts.length > 0 ? (
+                    <ol className="mt-2">
+                      {checkouts.map((property) => {
+                        const isDark = property.checkout.property_color
+                          ? Color(property.checkout.property_color).isDark()
+                          : false;
 
-                      return (
-                        <li key={event.id}>
-                          <a href={"#"} className="group flex">
-                            <span
-                              className={classNames(
-                                "flex-auto truncate font-medium text-stone-900  px-3",
-                                isDark ? "text-white" : "text-black",
-                                !event.color ? "bg-stone-400" : ""
-                              )}
-                              style={{
-                                backgroundColor: event.color ?? undefined,
-                              }}
-                            >
-                              {event.name}
-                            </span>
-                            {/* <time
+                        return (
+                          <li key={property.checkout.property_id}>
+                            <a href={"#"} className="group flex">
+                              <span
+                                className={classNames(
+                                  "flex items-center justify-between w-full pl-3 pr-1",
+                                  isDark ? "text-white" : "text-stone-900",
+                                  !property.checkout.property_color
+                                    ? "bg-stone-400"
+                                    : ""
+                                )}
+                                style={{
+                                  backgroundColor:
+                                    property.checkout.property_color ??
+                                    undefined,
+                                }}
+                              >
+                                <span
+                                  className={classNames(
+                                    "flex-auto truncate font-medium"
+                                  )}
+                                >
+                                  {property.checkout.property_name}
+                                </span>
+                                <span>
+                                  {property._tag === "checkin-checkout" ? (
+                                    <LogIn size={14} />
+                                  ) : null}
+                                </span>
+                              </span>
+
+                              {/* <time
                             dateTime={event.datetime}
                             className="ml-3 hidden flex-none text-stone-500 group-hover:text-indigo-600 xl:block"
                           >
                             {event.time}
                           </time> */}
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                )}
-              </div>
-            ))}
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
           <div className="isolate grid w-full grid-cols-7 gap-px auto-rows-fr lg:hidden">
             {days.map((day) => {
@@ -158,6 +192,8 @@ export const Calendar = ({ days, date }: { days: Day[]; date: Date }) => {
               if (O.isSome(dayParam)) {
                 params.append("day", dayParam.value);
               }
+
+              const checkouts = checkoutProperties(day.properties);
 
               return (
                 <Link
@@ -192,12 +228,12 @@ export const Calendar = ({ days, date }: { days: Day[]; date: Date }) => {
                     {day.formattedDate.split("-").pop()?.replace(/^0/, "") ??
                       null}
                   </time>
-                  <span className="sr-only">{day.checkouts.length} events</span>
-                  {day.checkouts.length > 0 && (
+                  <span className="sr-only">{checkouts.length} events</span>
+                  {checkouts.length > 0 && (
                     <span className="-mx-0.5 mt-auto flex flex-wrap-reverse">
-                      {day.checkouts.map((checkout) => (
+                      {checkouts.map((checkout) => (
                         <span
-                          key={checkout.id}
+                          key={checkout.checkout.event_id}
                           className="mx-0.5 mb-1 h-1.5 w-1.5 rounded-full bg-stone-400"
                         />
                       ))}
@@ -211,40 +247,102 @@ export const Calendar = ({ days, date }: { days: Day[]; date: Date }) => {
       </div>
       {selectedDay ? (
         <>
-          {selectedDay.checkouts.length > 0 && (
+          {selectedDayProperties.length > 0 ? (
             <div className="px-4 py-10 sm:px-6 lg:hidden">
-              <ol className="divide-y divide-stone-100 overflow-hidden rounded-lg bg-white text-sm ring-1 ring-black ring-opacity-5">
-                {selectedDay.checkouts.map((checkout) => (
-                  <li
-                    key={checkout.id}
-                    className="group flex p-4 pr-6 focus-within:bg-stone-50 hover:bg-stone-50"
-                  >
-                    <div className="flex-auto">
-                      <p className="font-semibold text-stone-900">
-                        {checkout.name}
-                      </p>
-                      {/* <time
-                        dateTime={checkout.datetime}
-                        className="mt-2 flex items-center text-stone-700"
-                      >
-                        <ClockIcon
-                          className="mr-2 h-5 w-5 text-stone-400"
-                          aria-hidden="true"
-                        />
-                        {checkout.time}
-                      </time> */}
-                    </div>
-                    <a
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {selectedDayProperties.map((property) => {
+                  const state = pipe(
+                    Match.value(property),
+                    Match.when({ _tag: "ongoing" }, (ongoing) => ({
+                      _tag: "ongoing" as const,
+                      ends: ongoing.ongoing.event_end,
+                    })),
+                    Match.when({ _tag: "checkout" }, (checkout) => ({
+                      _tag: "terminating" as const,
+                      endingEvent: {
+                        durationInDays: differenceInDays(
+                          checkout.checkout.event_end,
+                          checkout.checkout.event_start
+                        ),
+                      },
+                    })),
+                    Match.when(
+                      { _tag: "checkin-checkout" },
+                      (checkinCheckout) => ({
+                        _tag: "both" as const,
+                        endingEvent: {
+                          durationInDays: differenceInDays(
+                            checkinCheckout.checkout.event_end,
+                            checkinCheckout.checkout.event_start
+                          ),
+                        },
+                        startingEvent: {
+                          durationInDays: differenceInDays(
+                            checkinCheckout.checkin.event_end,
+                            checkinCheckout.checkin.event_start
+                          ),
+                        },
+                      })
+                    ),
+                    Match.when({ _tag: "checkin" }, (checkin) => ({
+                      _tag: "starting" as const,
+                      startingEvent: {
+                        durationInDays: differenceInDays(
+                          checkin.checkin.event_end,
+                          checkin.checkin.event_start
+                        ),
+                      },
+                    })),
+                    Match.when({ _tag: "vacant" }, () => ({
+                      _tag: "vacant" as const,
+                    })),
+                    Match.exhaustive
+                  );
+
+                  const isDark = property.property.color
+                    ? Color(property.property.color).isDark()
+                    : false;
+
+                  return (
+                    <div
+                      key={property.property.id}
+                      className={classNames(
+                        `rounded-2xl bg-white p-4 flex flex-col gap-3 border-2`
+                      )}
+                      style={{
+                        borderColor: property.property.color ?? undefined,
+                      }}
+                    >
+                      <div className="flex-auto flex flex-col gap-4">
+                        <div className="">
+                          <span
+                            className={classNames(
+                              "font-semibold text-sm p-2 rounded-lg",
+                              isDark ? "text-white" : "text-stone-900"
+                            )}
+                            style={{
+                              backgroundColor:
+                                property.property.color ?? undefined,
+                            }}
+                          >
+                            {property.property.name}
+                          </span>
+                        </div>
+
+                        <PropertyDayState state={state} />
+                      </div>
+                      {/* <a
                       // href={""}
                       className="ml-6 flex-none self-center rounded-md bg-white px-3 py-2 font-semibold text-stone-900 opacity-0 shadow-sm ring-1 ring-inset ring-stone-300 hover:ring-stone-400 focus:opacity-100 group-hover:opacity-100"
                     >
                       Edit<span className="sr-only">, {checkout.name}</span>
-                    </a>
-                  </li>
-                ))}
-              </ol>
+                    </a> */}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          )}
+          ) : null}
         </>
       ) : null}
     </div>
