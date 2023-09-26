@@ -56,7 +56,7 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
             {claimed.length > 0 || unclaimed.length > 0 ? (
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-1">
-                  {unclaimed.length > 0 ? (
+                  {claimed.length > 0 ? (
                     <span className="px-4 text-xs text-stone-600">Yours</span>
                   ) : null}
                   <div>
@@ -85,11 +85,7 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
                           );
                         })}
                       </>
-                    ) : (
-                      <>
-                        <span className="px-4 text-stone-600 text-xs">-</span>
-                      </>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 
