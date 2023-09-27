@@ -24,7 +24,10 @@ name: Event Sync
 on:
   schedule:
     # Runs "At minute 0 past hour 0, 4, 8, 10, 12, 13, 15, 17, and 21." (see https://crontab.guru)
-    - cron: "0 0,4,8,10,12,13,15,17,21 * * *"
+    # GMT+3 TIME:
+    # - cron: "0 0,4,8,10,12,13,15,17,21 * * *"
+    # UTC TIME:
+    - cron: "0 21,1,5,7,9,10,12,14,18 * * *"
 
 jobs:
   make-get-request:
