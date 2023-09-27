@@ -1,20 +1,67 @@
-# .github/workflows/scheduled-builds.yml
-name: Initiate event sync on a CRON schedule
+# # .github/workflows/scheduled-builds.yml
+# name: Initiate event sync on a CRON schedule
+
+# on:
+#   schedule:
+#     # Runs "At minute 0 past every 4th hour." (see https://crontab.guru)
+#     - cron: "0 */4 * * *"
+# jobs:
+#   run-script:
+#     name: Run events sync
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+
+#       - name: HTTP Request Action
+#         uses: fjogeleit/http-request-action@v1.14.1
+#         with:
+#           url: https://property-management-ui-one.vercel.app/api/event-sync
+#           method: "GET"
+
+name: Event Sync
 
 on:
   schedule:
-    # Runs "At minute 0 past every 4th hour." (see https://crontab.guru)
-    - cron: "0 */4 * * *"
-jobs:
-  run-script:
-    name: Run events sync
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    # Runs "At minute 0 past hour 0, 4, 8, 10, 12, 13, 15, 17, and 21." (see https://crontab.guru)
+    - cron: "0 0,4,8,10,12,13,15,17,21 * * *"
 
-      - name: HTTP Request Action
-        uses: fjogeleit/http-request-action@v1.14.1
-        with:
-          url: https://property-management-ui-one.vercel.app/api/event-sync
-          method: "GET"
+jobs:
+  make-get-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Make GET request and retry until a specific status code
+        run: |
+          max_retries=50
+          retry_delay=2  # in seconds
+          desired_status_code=200
+          stop_status_code=500  # Status code that will stop the retry
+          url="https://property-management-ui-one.vercel.app/api/limited-event-sync"
+
+          for i in $(seq $max_retries); do
+            response=$(curl -s -w "\n%{http_code}" $url)
+            status_code=$(echo "$response" | tail -n 1)
+            body=$(echo "$response" | head -n -1)
+
+            echo "Attempt $i - Response Status Code: $status_code"
+            echo "$body"
+
+            if [ "$status_code" -eq "$desired_status_code" ]; then
+              echo "Received desired status code ($desired_status_code). Response Body:"
+              echo "$body"
+              exit 0
+            elif [ "$status_code" -eq "$stop_status_code" ]; then
+              echo "Received stop status code ($stop_status_code). Exiting with failure..."
+              exit 1
+            fi
+
+            echo "Retrying in $retry_delay seconds..."
+            sleep $retry_delay
+          done
+
+          echo "Max retries reached. Exiting with failure..."
+          exit 1
