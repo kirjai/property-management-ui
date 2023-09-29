@@ -4,7 +4,9 @@ import * as E from "@effect/data/Either";
 
 export const loginRoute = "/login";
 export const homeRoute = "/";
-export const calendarRoute = (date: Date, fallback?: string) => {
+export const calendarRoute = (date?: Date, fallback?: string) => {
+  if (!date) return "/calendar";
+
   const month = S.encodeEither(MonthParam)(date);
   return E.isRight(month)
     ? `/calendar/${month.right}`

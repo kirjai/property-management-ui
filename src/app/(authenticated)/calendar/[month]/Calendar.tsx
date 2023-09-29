@@ -46,7 +46,7 @@ export const Calendar = ({
 
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
-      <header className="flex items-center justify-between border-b border-stone-200 px-6 py-4 lg:flex-none">
+      <div className="flex items-center justify-between border-b border-stone-200 px-6 py-4 lg:flex-none">
         <h3 className="font-bold text-xl">
           <time dateTime={`${format(date, "yyyy-MM")}`}>
             Checkouts {format(date, "MMMM yyyy")}
@@ -78,7 +78,7 @@ export const Calendar = ({
           </div>
           <div className="hidden md:ml-4 md:flex md:items-center"></div>
         </div>
-      </header>
+      </div>
       <div className="shadow ring-1 ring-black ring-opacity-5 lg:flex lg:flex-auto lg:flex-col">
         <div className="grid grid-cols-7 gap-px border-b border-stone-300 bg-stone-200 text-center text-xs font-semibold leading-6 text-stone-700 lg:flex-none">
           <div className="bg-white py-2">
@@ -248,7 +248,7 @@ export const Calendar = ({
       {selectedDay ? (
         <>
           {selectedDayProperties.length > 0 ? (
-            <div className="px-4 py-10 sm:px-6 lg:hidden">
+            <div className="px-4 py-10 sm:pb-0 sm:px-6 lg:hidden">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {selectedDayProperties.map((property) => {
                   const state = pipe(

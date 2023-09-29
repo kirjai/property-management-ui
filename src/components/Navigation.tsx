@@ -1,32 +1,50 @@
 "use client";
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
-import { Menu, X } from "lucide-react";
+import { Calendar, Home, Menu, X } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { calendarRoute, homeRoute } from "@/app-routes";
 import classNames from "classnames";
+import { usePathname } from "next/navigation";
+
+const NavLabel = ({
+  content,
+  icon,
+}: {
+  content: ReactNode;
+  icon: ReactNode;
+}) => {
+  return (
+    <span className="flex gap-1 items-center">
+      <span className="opacity-40">{icon}</span>
+      <span>{content}</span>
+    </span>
+  );
+};
 
 const navItems = [
   {
-    name: <>Home</>,
+    name: (
+      <NavLabel icon={<Home aria-hidden="true" size={20} />} content="Home" />
+    ),
     href: homeRoute,
   },
   {
-    name: <>Calendar</>,
+    name: (
+      <NavLabel
+        icon={<Calendar aria-hidden="true" size={20} />}
+        content="Calendar"
+      />
+    ),
     href: calendarRoute(new Date()),
   },
 ];
@@ -62,7 +80,7 @@ export const MobileNavigation = () => {
             className="bg-transparent border-none shadow-none w-auto"
           >
             <NavigationMenu orientation="vertical">
-              <NavigationMenuList className="flex flex-col space-x-0 gap-4 text-sm font-medium">
+              <NavigationMenuList className="flex flex-col space-x-0 gap-4 text-sm font-semibold">
                 {navItems.map((item) => {
                   return (
                     <NavigationMenuItem
@@ -80,6 +98,39 @@ export const MobileNavigation = () => {
           </PopoverContent>
         </Popover>
       </div>
+    </div>
+  );
+};
+
+export const Navigation = () => {
+  const pathname = usePathname();
+  console.log({
+    pathname,
+  });
+
+  return (
+    <div className="hidden sm:block px-4 sm:px-6 lg:pr-0">
+      <NavigationMenu orientation="horizontal" className="">
+        <NavigationMenuList className="flex justify-between items-center gap-3">
+          {navItems.map((item) => {
+            const isActive = pathname.split("/")[1] === item.href.split("/")[1];
+
+            return (
+              <NavigationMenuItem
+                key={item.href}
+                className={classNames(
+                  "font-semibold py-2 rounded-xl px-4 text-sm",
+                  isActive ? "text-black bg-white" : "text-white"
+                )}
+              >
+                <Link href={item.href} className="py-4">
+                  {item.name}
+                </Link>
+              </NavigationMenuItem>
+            );
+          })}
+        </NavigationMenuList>
+      </NavigationMenu>
     </div>
   );
 };
