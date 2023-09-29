@@ -1,7 +1,7 @@
 {
   "Login": {
     "email-address-not-recognized-if-you-think-this-is-a-mistake-please-check-the-email-address-and-try-again": "Email address not recognized. If you think this is a mistake - please check the email address and try again.",
-    "sorry-we-couldn-and-rsquo-t-sign-you-in-at-this-time": "Sorry, we couldn&rsquo;t sign you in at this time.",
+    "sorry-we-couldn-and-rsquo-t-sign-you-in-at-this-time": "Sorry, we couldn't sign you in at this time.",
     "signing-you-in": "Signing you in...",
     "sign-in": "Sign in",
     "email": "Email",
@@ -26,7 +26,7 @@
   },
   "Layout": {
     "have-a-nice-day": "Have a nice day",
-    "here-and-rsquo-s-what-and-rsquo-s-happening": "Here&rsquo;s what&rsquo;s happening",
+    "here-and-rsquo-s-what-and-rsquo-s-happening": "Here's what's happening",
     "welcome": "Welcome",
     "open-menu": "Open menu",
     "close-menu": "Close menu",
