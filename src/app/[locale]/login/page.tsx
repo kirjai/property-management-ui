@@ -6,7 +6,11 @@ import { LoginForm } from "./form";
 
 export const dynamic = "force-dynamic";
 
-export default async function Login() {
+export default async function Login({
+  searchParams,
+}: {
+  searchParams: Record<string, string>;
+}) {
   const supabase = createServerComponentClient({ cookies });
   const {
     data: { user },
@@ -23,10 +27,10 @@ export default async function Login() {
         <div className="bg-white rounded-3xl rounded-b-none sm:rounded-b-3xl p-7 py-10 flex flex-col gap-6 sm:w-[500px]">
           <form
             className="flex flex-col gap-4"
-            action="/auth/login"
+            action="/api/auth/login"
             method="post"
           >
-            <LoginForm />
+            <LoginForm searchParams={searchParams} />
           </form>
         </div>
       </div>

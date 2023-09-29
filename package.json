@@ -33,6 +33,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.279.0",
     "next": "^13.5.1",
+    "next-intl": "^3.0.0-rc.2",
     "node-ical": "^0.16.1",
     "postcss": "8.4.30",
     "react": "^18.2.0",

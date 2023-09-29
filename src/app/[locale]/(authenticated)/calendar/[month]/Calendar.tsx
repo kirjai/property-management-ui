@@ -13,6 +13,7 @@ import * as Match from "@effect/match";
 import { CalendarDay } from "./create-month";
 import { pipe } from "@effect/data/Function";
 import differenceInDays from "date-fns/differenceInDays";
+import { useLocale, useTranslations } from "next-intl";
 
 const checkoutProperties = (properties: CalendarDay["properties"]) =>
   properties.filter(
@@ -43,13 +44,19 @@ export const Calendar = ({
   const selectedDayProperties = adminPropertiesFilter(
     selectedDay?.properties ?? []
   );
+  const t = useTranslations("Calendar");
+  const locale = useLocale();
 
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
       <div className="flex items-center justify-between border-b border-stone-200 px-6 py-4 lg:flex-none">
         <h3 className="font-bold text-xl">
           <time dateTime={`${format(date, "yyyy-MM")}`}>
-            Checkouts {format(date, "MMMM yyyy")}
+            {t("checkouts")}{" "}
+            {Intl.DateTimeFormat(locale, {
+              month: "long",
+              year: "numeric",
+            }).format(date)}
           </time>
         </h3>
         <div className="flex items-center">
@@ -58,21 +65,21 @@ export const Calendar = ({
               href={calendarRoute(addMonths(date, -1))}
               className="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-stone-300 pr-1 text-stone-400 hover:text-stone-500 focus:relative md:w-9 md:pr-0 md:hover:bg-stone-50"
             >
-              <span className="sr-only">Previous month</span>
+              <span className="sr-only">{t("previous-month")}</span>
               <ChevronLeft className="h-5 w-5" aria-hidden="true" />
             </Link>
             <Link
               href={calendarRoute(new Date())}
               className="hidden border-y border-stone-300 px-3.5 text-sm font-semibold text-stone-900 hover:bg-stone-50 focus:relative md:block self-center py-[7px]"
             >
-              Today
+              {t("today")}
             </Link>
             <span className="relative -mx-px h-5 w-px bg-stone-300 md:hidden" />
             <Link
               href={calendarRoute(addMonths(date, 1))}
               className="flex h-9 w-12 items-center justify-center rounded-r-md border-y border-r border-stone-300 pl-1 text-stone-400 hover:text-stone-500 focus:relative md:w-9 md:pl-0 md:hover:bg-stone-50"
             >
-              <span className="sr-only">Next month</span>
+              <span className="sr-only">{t("next-month")}</span>
               <ChevronRight className="h-5 w-5" aria-hidden="true" />
             </Link>
           </div>
@@ -198,6 +205,7 @@ export const Calendar = ({
               return (
                 <Link
                   href={`?${params.toString()}`}
+                  locale={locale}
                   key={day.formattedDate}
                   className={classNames(
                     day.isCurrentMonth ? "bg-white" : "bg-stone-50",

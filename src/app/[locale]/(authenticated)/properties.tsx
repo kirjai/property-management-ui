@@ -3,10 +3,8 @@ import { getAdminProperties } from "@/db/user/user-db";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/supabase-js";
 import differenceInDays from "date-fns/differenceInDays";
-import format from "date-fns/format";
-import { CalendarCheck, CalendarXIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cookies } from "next/headers";
-import { ReactNode } from "react";
 
 export const Properties = async ({
   user,
@@ -15,6 +13,7 @@ export const Properties = async ({
   user: User;
   date: Date;
 }) => {
+  const t = useTranslations("Home");
   const supabase = createServerComponentClient({ cookies });
 
   const adminProperties = await getAdminProperties(supabase)(user.id, date);
@@ -23,11 +22,11 @@ export const Properties = async ({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="px-4 pt-6">
-        <h3 className="font-bold text-xl">Your properties</h3>
+      <div className="px-4 pt-6 lg:px-6">
+        <h3 className="font-bold text-xl">{t("your-properties")}</h3>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 lg:px-6">
         {adminProperties.map((property) => {
           const state = property.events.ongoing
             ? {

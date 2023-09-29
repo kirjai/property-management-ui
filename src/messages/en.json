@@ -1,0 +1,42 @@
+{
+  "Login": {
+    "email-address-not-recognized-if-you-think-this-is-a-mistake-please-check-the-email-address-and-try-again": "Email address not recognized. If you think this is a mistake - please check the email address and try again.",
+    "sorry-we-couldn-and-rsquo-t-sign-you-in-at-this-time": "Sorry, we couldn&rsquo;t sign you in at this time.",
+    "signing-you-in": "Signing you in...",
+    "sign-in": "Sign in",
+    "email": "Email",
+    "let-us-get-you-signed-in": "Let us get you signed in!",
+    "welcome-back": "Welcome back",
+    "please-check-your-email-and-click-the-login-link-in-the-email-to-continue": "Please check your email and click the login link in the email to continue.",
+    "login-email-sent": "✅ ✉️ Login email sent"
+  },
+  "Home": {
+    "your-check-outs": "Your check-outs",
+    "all-clear": "🙌 All clear!",
+    "unclaimed": "Unclaimed",
+    "yours": "Yours",
+    "tomorrow": "Tomorrow",
+    "today": "Today",
+    "your-properties": "Your properties",
+    "checkout": "Check-out",
+    "nights": "{count, plural, =1 {night} other {nights}}",
+    "checkin": "Check-in",
+    "vacant": "Vacant",
+    "busy-until": "Busy until"
+  },
+  "Layout": {
+    "have-a-nice-day": "Have a nice day",
+    "here-and-rsquo-s-what-and-rsquo-s-happening": "Here&rsquo;s what&rsquo;s happening",
+    "welcome": "Welcome",
+    "open-menu": "Open menu",
+    "close-menu": "Close menu",
+    "calendar": "Calendar",
+    "home": "Home"
+  },
+  "Calendar": {
+    "next-month": "Next month",
+    "previous-month": "Previous month",
+    "checkouts": "Checkouts",
+    "today": "Today"
+  }
+}

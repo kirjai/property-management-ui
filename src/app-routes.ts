@@ -1,5 +1,5 @@
 import * as S from "@effect/schema/Schema";
-import { MonthParam } from "./app/(authenticated)/calendar/[month]/month-param";
+import { MonthParam } from "./app/[locale]/(authenticated)/calendar/[month]/month-param";
 import * as E from "@effect/data/Either";
 
 export const loginRoute = "/login";

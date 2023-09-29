@@ -15,41 +15,21 @@ import Link from "next/link";
 import { calendarRoute, homeRoute } from "@/app-routes";
 import classNames from "classnames";
 import { usePathname } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 
-const NavLabel = ({
-  content,
-  icon,
+export const MobileNavigation = ({
+  items,
+  messages: { openMenu, closeMenu },
 }: {
-  content: ReactNode;
-  icon: ReactNode;
+  items: {
+    name: JSX.Element;
+    href: string;
+  }[];
+  messages: {
+    openMenu: ReactNode;
+    closeMenu: ReactNode;
+  };
 }) => {
-  return (
-    <span className="flex gap-1 items-center">
-      <span className="opacity-40">{icon}</span>
-      <span>{content}</span>
-    </span>
-  );
-};
-
-const navItems = [
-  {
-    name: (
-      <NavLabel icon={<Home aria-hidden="true" size={20} />} content="Home" />
-    ),
-    href: homeRoute,
-  },
-  {
-    name: (
-      <NavLabel
-        icon={<Calendar aria-hidden="true" size={20} />}
-        content="Calendar"
-      />
-    ),
-    href: calendarRoute(new Date()),
-  },
-];
-
-export const MobileNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -71,9 +51,7 @@ export const MobileNavigation = () => {
             )}
           >
             {isOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-            <span className="sr-only">
-              {isOpen ? "Close menu" : "Open menu"}
-            </span>
+            <span className="sr-only">{isOpen ? closeMenu : openMenu}</span>
           </PopoverTrigger>
           <PopoverContent
             side="top"
@@ -81,7 +59,7 @@ export const MobileNavigation = () => {
           >
             <NavigationMenu orientation="vertical">
               <NavigationMenuList className="flex flex-col space-x-0 gap-4 text-sm font-semibold">
-                {navItems.map((item) => {
+                {items.map((item) => {
                   return (
                     <NavigationMenuItem
                       key={item.href}
@@ -102,18 +80,24 @@ export const MobileNavigation = () => {
   );
 };
 
-export const Navigation = () => {
+export const Navigation = ({
+  items,
+}: {
+  items: {
+    name: JSX.Element;
+    href: string;
+  }[];
+}) => {
   const pathname = usePathname();
-  console.log({
-    pathname,
-  });
+  const locale = useLocale();
 
   return (
     <div className="hidden sm:block px-4 sm:px-6 lg:pr-0">
       <NavigationMenu orientation="horizontal" className="">
         <NavigationMenuList className="flex justify-between items-center gap-3">
-          {navItems.map((item) => {
-            const isActive = pathname.split("/")[1] === item.href.split("/")[1];
+          {items.map((item) => {
+            const isActive =
+              (pathname.split("/")[2] ?? "") === item.href.split("/")[1];
 
             return (
               <NavigationMenuItem
@@ -123,7 +107,7 @@ export const Navigation = () => {
                   isActive ? "text-black bg-white" : "text-white"
                 )}
               >
-                <Link href={item.href} className="py-4">
+                <Link href={item.href} className="py-4" locale={locale}>
                   {item.name}
                 </Link>
               </NavigationMenuItem>

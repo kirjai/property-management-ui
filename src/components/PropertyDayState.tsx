@@ -1,5 +1,6 @@
 import format from "date-fns/format";
 import { CalendarCheck, CalendarXIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { ReactNode } from "react";
 
 type PropertyEvent = {
@@ -29,10 +30,16 @@ type State =
     };
 
 export const PropertyDayState = ({ state }: { state: State }) => {
+  const t = useTranslations("Home");
+  const locale = useLocale();
+
   return state._tag === "ongoing" ? (
     <BusyIndicator
       icon={<CalendarXIcon className="text-red-600" size="30px" />}
-      text={`Busy until ${format(state.ends, "dd MMM")}`}
+      text={`${t("busy-until")} ${Intl.DateTimeFormat(locale, {
+        day: "numeric",
+        month: "short",
+      }).format(state.ends)}`}
     />
   ) : state._tag === "terminating" ||
     state._tag === "starting" ||
@@ -42,10 +49,11 @@ export const PropertyDayState = ({ state }: { state: State }) => {
         {state._tag === "terminating" || state._tag === "both" ? (
           <div className="flex flex-col gap-1">
             <span className="bg-red-700 px-2 py-1 rounded-md font-bold text-xs text-center text-white">
-              Check-out
+              {t("checkout")}
             </span>
             <span className="text-xs text-center">
-              {state.endingEvent.durationInDays} nights
+              {state.endingEvent.durationInDays}{" "}
+              {t("nights", { count: state.endingEvent.durationInDays })}
             </span>
           </div>
         ) : (
@@ -56,10 +64,11 @@ export const PropertyDayState = ({ state }: { state: State }) => {
         {state._tag === "starting" || state._tag === "both" ? (
           <div className="flex flex-col gap-1">
             <span className="bg-red-700 px-2 py-1 rounded-md font-bold text-xs text-center text-white">
-              Check-in
+              {t("checkin")}
             </span>
             <span className="text-xs text-center">
-              {state.startingEvent.durationInDays} nights
+              {state.startingEvent.durationInDays}{" "}
+              {t("nights", { count: state.startingEvent.durationInDays })}
             </span>
           </div>
         ) : (
@@ -70,7 +79,7 @@ export const PropertyDayState = ({ state }: { state: State }) => {
   ) : (
     <BusyIndicator
       icon={<CalendarCheck className="text-green-500" size="30px" />}
-      text={"Vacant"}
+      text={t("vacant")}
     />
   );
 };
@@ -91,9 +100,11 @@ const BusyIndicator = ({
 };
 
 const VacantIndicator = () => {
+  const t = useTranslations("Home");
+
   return (
     <span className="text-xs text-green-600 font-bold border-2 border-green-600 px-2 py-[2px] rounded-md">
-      Vacant
+      {t("vacant")}
     </span>
   );
 };

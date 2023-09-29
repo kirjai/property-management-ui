@@ -17,6 +17,7 @@ export type MessageTag = "success";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  console.log("POSTING");
   const requestUrl = new URL(request.url);
   const formData = await request.formData();
   const supabase = createRouteHandlerClient({ cookies });
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
   const { data, error } = await supabase.auth.signInWithOtp({
     email: parsed.right.email,
     options: {
-      emailRedirectTo: `${requestUrl.origin}/auth/callback`,
+      emailRedirectTo: `${requestUrl.origin}/api/auth/callback`,
     },
   });
 

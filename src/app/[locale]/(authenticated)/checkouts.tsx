@@ -9,9 +9,12 @@ import isSameDay from "date-fns/isSameDay";
 import { cookies } from "next/headers";
 import Color from "color";
 import { AlertCircle } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
+  const t = useTranslations("Home");
   const supabase = createServerComponentClient({ cookies });
+  const locale = useLocale();
 
   const checkouts = await getCheckoutsForUser(supabase)(user.id, {
     fromDate: date,
@@ -23,10 +26,13 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
         const day = addDays(date, i);
         const isToday = i === 0;
         const heading = isToday
-          ? "Today"
+          ? t("today")
           : i === 1
-          ? "Tomorrow"
-          : format(day, "dd MMM");
+          ? t("tomorrow")
+          : Intl.DateTimeFormat(locale, {
+              day: "numeric",
+              month: "short",
+            }).format(day);
 
         const dayCheckouts = checkouts.filter((checkout) =>
           isSameDay(checkout.event_end, day)
@@ -57,7 +63,9 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
               <div className="flex flex-col gap-3">
                 {claimed.length > 0 ? (
                   <div className="flex flex-col gap-1">
-                    <span className="px-4 text-xs text-stone-600">Yours</span>
+                    <span className="px-4 text-xs text-stone-600">
+                      {t("yours")}
+                    </span>
                     <div>
                       {claimed.map((checkout) => {
                         const isDark = checkout.property_color
@@ -88,7 +96,9 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
                 {unclaimed.length > 0 ? (
                   <div className="flex flex-col gap-1">
                     <span className="text-red-700 flex items-center px-4 gap-1">
-                      <span className="text-xs font-semibold">Unclaimed</span>
+                      <span className="text-xs font-semibold">
+                        {t("unclaimed")}
+                      </span>
                       <AlertCircle size={16} />
                     </span>
                     <div>
@@ -124,7 +134,7 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
                 ) : null}
               </div>
             ) : (
-              <p className="px-4">🙌 All clear!</p>
+              <p className="px-4">{t("all-clear")}</p>
             )}
           </div>
         );
