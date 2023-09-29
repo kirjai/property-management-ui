@@ -55,39 +55,35 @@ export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
             </span>
             {claimed.length > 0 || unclaimed.length > 0 ? (
               <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-1">
-                  {claimed.length > 0 ? (
+                {claimed.length > 0 ? (
+                  <div className="flex flex-col gap-1">
                     <span className="px-4 text-xs text-stone-600">Yours</span>
-                  ) : null}
-                  <div>
-                    {claimed.length > 0 ? (
-                      <>
-                        {claimed.map((checkout) => {
-                          const isDark = checkout.property_color
-                            ? Color(checkout.property_color).isDark()
-                            : false;
+                    <div>
+                      {claimed.map((checkout) => {
+                        const isDark = checkout.property_color
+                          ? Color(checkout.property_color).isDark()
+                          : false;
 
-                          return (
-                            <p
-                              key={checkout.event_id}
-                              className={`text-sm px-4 py-2 font-medium ${
-                                isDark ? "text-white" : "text-black"
-                              } ${
-                                !checkout.property_color ? "bg-stone-400" : ""
-                              }`}
-                              style={{
-                                backgroundColor:
-                                  checkout.property_color ?? undefined,
-                              }}
-                            >
-                              {checkout.property_name}
-                            </p>
-                          );
-                        })}
-                      </>
-                    ) : null}
+                        return (
+                          <p
+                            key={checkout.event_id}
+                            className={`text-sm px-4 py-2 font-medium ${
+                              isDark ? "text-white" : "text-black"
+                            } ${
+                              !checkout.property_color ? "bg-stone-400" : ""
+                            }`}
+                            style={{
+                              backgroundColor:
+                                checkout.property_color ?? undefined,
+                            }}
+                          >
+                            {checkout.property_name}
+                          </p>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                ) : null}
 
                 {unclaimed.length > 0 ? (
                   <div className="flex flex-col gap-1">

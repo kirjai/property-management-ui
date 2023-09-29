@@ -10,6 +10,7 @@ import * as O from "@effect/data/Option";
 import { createCalendarMonth, createMonthRange } from "./create-month";
 import { Calendar } from "./Calendar";
 import { DayParam } from "./day-param";
+import { MobileNavigation } from "@/components/Navigation";
 
 export default async function CalendarPage({
   params,
@@ -47,7 +48,8 @@ export default async function CalendarPage({
   );
 
   return (
-    <div className="h-full bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:bg-transparent sm:p-6">
+    <div className="w-full bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:bg-transparent sm:p-6">
+      <MobileNavigation />
       <div className="bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:shadow-sm pb-6">
         <Calendar days={calendarDays} date={monthDate.right} />
       </div>

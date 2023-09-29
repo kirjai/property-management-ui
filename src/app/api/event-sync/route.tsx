@@ -127,6 +127,7 @@ export async function GET() {
       ),
       Effect.flatMap(processPlatformProperty(supabase)),
       Effect.catchTag("NoPropertyPlatform", () => {
+        console.log("No properties to sync");
         return Effect.succeed({});
       }),
       Effect.mapBoth({
@@ -152,14 +153,7 @@ export async function GET() {
 }
 
 const processPlatformProperty =
-  (supabase: SupabaseClient) =>
-  (
-    propertyPlatform: PropertyPlatform
-  ): Effect.Effect<
-    never,
-    PropertyPlatformProcessingError | NoPropertyPlatform,
-    null
-  > => {
+  (supabase: SupabaseClient) => (propertyPlatform: PropertyPlatform) => {
     console.log("Processing property platform id", propertyPlatform.id);
 
     return getCalendarEventsForPropertyPlatform(propertyPlatform).pipe(
@@ -219,19 +213,19 @@ const processPlatformProperty =
             );
           })
         );
-      }),
-      Effect.flatMap(() => queryPlatformPropertyToProcess(supabase)),
-      Effect.mapError(
-        (error) => new PropertyPlatformProcessingError(error, propertyPlatform)
-      ),
-      Effect.flatMap((maybeNextPropertyPlatform) =>
-        Effect.fromNullable(maybeNextPropertyPlatform).pipe(
-          Effect.mapError(() => new NoPropertyPlatform())
-        )
-      ),
-      Effect.flatMap((nextPropertyPlatform) =>
-        processPlatformProperty(supabase)(nextPropertyPlatform)
-      )
+      })
+      // Effect.flatMap(() => queryPlatformPropertyToProcess(supabase)),
+      // Effect.mapError(
+      //   (error) => new PropertyPlatformProcessingError(error, propertyPlatform)
+      // ),
+      // Effect.flatMap((maybeNextPropertyPlatform) =>
+      //   Effect.fromNullable(maybeNextPropertyPlatform).pipe(
+      //     Effect.mapError(() => new NoPropertyPlatform())
+      //   )
+      // ),
+      // Effect.flatMap((nextPropertyPlatform) =>
+      //   processPlatformProperty(supabase)(nextPropertyPlatform)
+      // )
     );
   };
 

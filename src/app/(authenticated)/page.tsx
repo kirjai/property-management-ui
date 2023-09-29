@@ -6,6 +6,7 @@ import addDays from "date-fns/addDays";
 import { Checkouts, CheckoutsFallback } from "./checkouts";
 import { Properties } from "./properties";
 import { Suspense } from "react";
+import { MobileNavigation } from "@/components/Navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -22,8 +23,9 @@ export default async function Home() {
   const date = addDays(new Date(), 0);
 
   return (
-    <div className="h-full bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:bg-transparent sm:p-6">
-      <div className="pb-6 bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:shadow-sm">
+    <div className="h-full w-full bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:bg-transparent sm:p-6">
+      <MobileNavigation />
+      <div className="pb-6 bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:shadow-sm h-full sm:h-auto">
         <div className="flex flex-col gap-3">
           <div className="px-4 pt-6">
             <h3 className="font-bold text-xl">Your check-outs</h3>

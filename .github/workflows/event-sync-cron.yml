@@ -1,24 +1,3 @@
-# # .github/workflows/scheduled-builds.yml
-# name: Initiate event sync on a CRON schedule
-
-# on:
-#   schedule:
-#     # Runs "At minute 0 past every 4th hour." (see https://crontab.guru)
-#     - cron: "0 */4 * * *"
-# jobs:
-#   run-script:
-#     name: Run events sync
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v3
-
-#       - name: HTTP Request Action
-#         uses: fjogeleit/http-request-action@v1.14.1
-#         with:
-#           url: https://property-management-ui-one.vercel.app/api/event-sync
-#           method: "GET"
-
 name: Event Sync
 
 on:

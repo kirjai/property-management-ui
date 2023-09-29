@@ -15,8 +15,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full">
-      <body className={`${inter.className} bg-primary h-full`}>{children}</body>
+    <html lang="en">
+      <body
+        className={`${inter.className} bg-primary supports-[height:100cqh]:h-[100cqh] supports-[height:100svh]:h-[100svh]`}
+      >
+        {children}
+      </body>
     </html>
   );
 }
