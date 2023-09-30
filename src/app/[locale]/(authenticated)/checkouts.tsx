@@ -1,22 +1,30 @@
 import { getCheckoutsForUser } from "@/db/user/user-db";
-import {
-  User,
-  createServerComponentClient,
-} from "@supabase/auth-helpers-nextjs";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import addDays from "date-fns/addDays";
-import format from "date-fns/format";
 import isSameDay from "date-fns/isSameDay";
 import { cookies } from "next/headers";
 import Color from "color";
 import { AlertCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { supabaseClientOptions } from "@/supabase/supabase";
 
-export const Checkouts = async ({ date, user }: { date: Date; user: User }) => {
+export const Checkouts = async ({
+  date,
+  userId,
+}: {
+  date: Date;
+  userId: string;
+}) => {
   const t = useTranslations("Home");
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createServerComponentClient(
+    { cookies },
+    {
+      options: supabaseClientOptions(userId),
+    }
+  );
   const locale = useLocale();
 
-  const checkouts = await getCheckoutsForUser(supabase)(user.id, {
+  const checkouts = await getCheckoutsForUser(supabase)(userId, {
     fromDate: date,
     toDate: addDays(date, 3),
   });

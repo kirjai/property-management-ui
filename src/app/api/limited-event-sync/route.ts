@@ -3,7 +3,7 @@ import {
   createRouteHandlerClient,
 } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { Effect, Option, pipe } from "effect";
 import { supabaseEffect } from "@/supabase/supabase";
 import formatISO from "date-fns/formatISO";

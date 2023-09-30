@@ -10,6 +10,8 @@ import * as O from "@effect/data/Option";
 import { createCalendarMonth, createMonthRange } from "./create-month";
 import { Calendar } from "./Calendar";
 import { DayParam } from "./day-param";
+import { getAuthenticatedUserFromSession } from "@/lib/passage";
+import { supabaseClientOptions } from "@/supabase/supabase";
 
 export default async function CalendarPage({
   params,
@@ -18,18 +20,22 @@ export default async function CalendarPage({
   params: { month: string };
   searchParams: Record<string, string>;
 }) {
-  const supabase = createServerComponentClient({ cookies });
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const maybeUser = await getAuthenticatedUserFromSession();
 
-  if (!user) return redirect(loginRoute);
+  if (!maybeUser.isAuthorized) return redirect(loginRoute);
+
+  const supabase = createServerComponentClient(
+    { cookies },
+    {
+      options: supabaseClientOptions(maybeUser.userId),
+    }
+  );
 
   const monthDate = S.parseEither(MonthParam)(params.month);
   if (E.isLeft(monthDate)) return redirect(homeRoute);
 
   const { start, end } = createMonthRange(monthDate.right);
-  const checkouts = await getCheckoutsForUser(supabase)(user.id, {
+  const checkouts = await getCheckoutsForUser(supabase)(maybeUser.userId, {
     fromDate: start,
     toDate: end,
   });

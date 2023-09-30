@@ -1,19 +1,15 @@
 import { loginRoute } from "@/app-routes";
-import {
-  User,
-  createServerComponentClient,
-} from "@supabase/auth-helpers-nextjs";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import addDays from "date-fns/addDays";
 import { Checkouts, CheckoutsFallback } from "./checkouts";
 import { Properties } from "./properties";
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
+import { getAuthenticatedUserFromSession } from "@/lib/passage";
 
 export const dynamic = "force-dynamic";
 
-function Home({ user }: { user: User }) {
+function Home({ userId }: { userId: string }) {
   const t = useTranslations("Home");
 
   // for easier debugging
@@ -29,13 +25,13 @@ function Home({ user }: { user: User }) {
 
           <div className="flex overflow-x-auto gap-3 px-4 lg:px-6 pb-2 items-stretch min-h-[150px]">
             <Suspense fallback={<CheckoutsFallback />}>
-              <Checkouts date={date} user={user} />
+              <Checkouts date={date} userId={userId} />
             </Suspense>
           </div>
         </div>
 
         <Suspense fallback={null}>
-          <Properties date={date} user={user} />
+          <Properties date={date} userId={userId} />
         </Suspense>
         {/* event detail - notes, length of stay */}
 
@@ -47,13 +43,9 @@ function Home({ user }: { user: User }) {
 }
 
 export default async function AsyncHome() {
-  const supabase = createServerComponentClient({ cookies });
+  const maybeUser = await getAuthenticatedUserFromSession();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  if (!maybeUser.isAuthorized) return redirect(loginRoute);
 
-  if (!user) return redirect(loginRoute);
-
-  return <Home user={user} />;
+  return <Home userId={maybeUser.userId} />;
 }

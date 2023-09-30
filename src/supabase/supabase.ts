@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Effect } from "effect";
+import jwt from "jsonwebtoken";
 
 type SupabasePromiseLike = ReturnType<SupabaseClient["rpc"]>;
 
@@ -17,3 +18,19 @@ export const supabaseEffect = (query: () => SupabasePromiseLike) =>
       error,
     }),
   });
+
+export const supabaseClientOptions = (userId: string) => {
+  const payload = {
+    userId,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+  };
+  const token = jwt.sign(payload, process.env.SUPABASE_JWT_SECRET!);
+
+  return {
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  };
+};

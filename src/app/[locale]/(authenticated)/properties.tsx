@@ -1,22 +1,27 @@
 import { PropertyDayState } from "@/components/PropertyDayState";
 import { getAdminProperties } from "@/db/user/user-db";
+import { supabaseClientOptions } from "@/supabase/supabase";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { User } from "@supabase/supabase-js";
 import differenceInDays from "date-fns/differenceInDays";
 import { useTranslations } from "next-intl";
 import { cookies } from "next/headers";
 
 export const Properties = async ({
-  user,
+  userId,
   date,
 }: {
-  user: User;
+  userId: string;
   date: Date;
 }) => {
   const t = useTranslations("Home");
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createServerComponentClient(
+    { cookies },
+    {
+      options: supabaseClientOptions(userId),
+    }
+  );
 
-  const adminProperties = await getAdminProperties(supabase)(user.id, date);
+  const adminProperties = await getAdminProperties(supabase)(userId, date);
 
   if (adminProperties.length === 0) return null;
 
