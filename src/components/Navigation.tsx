@@ -4,7 +4,7 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { Calendar, Home, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -12,10 +12,9 @@ import {
 } from "@/components/ui/popover";
 import { ReactNode, useState } from "react";
 import Link from "next/link";
-import { calendarRoute, homeRoute } from "@/app-routes";
 import classNames from "classnames";
 import { usePathname } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 
 export const MobileNavigation = ({
   items,
