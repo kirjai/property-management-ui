@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 const locales = ["en", "ru"];
 
 export const metadata: Metadata = {
-  title: "Propety management",
+  title: "denn.place | Property management",
   description: "Manage your rental property",
 };
 
