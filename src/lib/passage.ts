@@ -14,15 +14,23 @@ export const getAuthenticatedUserFromSession = async () => {
       isAuthorized: false as const,
     };
 
-  const userId = await passage.validAuthToken(passageAuthToken.value);
+  try {
+    const userId = await passage.validAuthToken(passageAuthToken.value);
 
-  if (!userId)
+    if (!userId)
+      return {
+        isAuthorized: false as const,
+      };
+
+    return {
+      isAuthorized: true as const,
+      userId,
+    };
+  } catch (error) {
+    console.error(error);
+
     return {
       isAuthorized: false as const,
     };
-
-  return {
-    isAuthorized: true as const,
-    userId,
-  };
+  }
 };
