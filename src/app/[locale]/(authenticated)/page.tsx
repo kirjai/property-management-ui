@@ -6,6 +6,7 @@ import { Properties } from "./properties";
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { getAuthenticatedUserFromSession } from "@/lib/passage";
+import { TokenSync } from "../TokenSync";
 
 export const dynamic = "force-dynamic";
 
@@ -47,5 +48,15 @@ export default async function AsyncHome() {
 
   if (!maybeUser.isAuthorized) return redirect(loginRoute);
 
-  return <Home userId={maybeUser.userId} />;
+  return (
+    <>
+      <Home userId={maybeUser.userId} />
+
+      <TokenSync
+        refreshToken={maybeUser.newRefreshToken}
+        authToken={maybeUser.newAuthToken}
+        refreshTokenExpiration={maybeUser.refreshTokenExpiration}
+      />
+    </>
+  );
 }

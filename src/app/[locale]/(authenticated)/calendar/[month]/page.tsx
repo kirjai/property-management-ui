@@ -12,6 +12,7 @@ import { Calendar } from "./Calendar";
 import { DayParam } from "./day-param";
 import { getAuthenticatedUserFromSession } from "@/lib/passage";
 import { supabaseClientOptions } from "@/supabase/supabase";
+import { TokenSync } from "@/app/[locale]/TokenSync";
 
 export default async function CalendarPage({
   params,
@@ -53,10 +54,17 @@ export default async function CalendarPage({
   );
 
   return (
-    <div className="w-full bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:bg-transparent sm:p-6 sm:pt-0">
-      <div className="bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:shadow-sm pb-6">
-        <Calendar days={calendarDays} date={monthDate.right} />
+    <>
+      <div className="w-full bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:bg-transparent sm:p-6 sm:pt-0">
+        <div className="bg-off-grey rounded-3xl rounded-b-none sm:rounded-b-3xl sm:shadow-sm pb-6">
+          <Calendar days={calendarDays} date={monthDate.right} />
+        </div>
       </div>
-    </div>
+      <TokenSync
+        refreshToken={maybeUser.newRefreshToken}
+        authToken={maybeUser.newAuthToken}
+        refreshTokenExpiration={maybeUser.refreshTokenExpiration}
+      />
+    </>
   );
 }
