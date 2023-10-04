@@ -11,7 +11,7 @@ export default async function Login() {
   if (maybeUser.isAuthorized) return redirect(homeRoute);
 
   return (
-    <main className="h-full flex flex-col justify-end">
+    <main className="h-full flex flex-col justify-end pb-4 md:justify-center">
       <PassageLogin />
     </main>
   );
