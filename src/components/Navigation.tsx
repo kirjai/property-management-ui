@@ -15,6 +15,8 @@ import Link from "next/link";
 import classNames from "classnames";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
+import Image from "next/image";
+import Logo from "./denn-logo.svg";
 
 export const MobileNavigation = ({
   items,
@@ -45,7 +47,7 @@ export const MobileNavigation = ({
         <Popover onOpenChange={setIsOpen} open={isOpen}>
           <PopoverTrigger
             className={classNames(
-              "bg-primary text-white border-2 border-white rounded-full p-3 shadow-stone-400",
+              "bg-primary text-secondary border-2 border-white rounded-full p-3 shadow-stone-400",
               !isOpen ? "shadow-xl" : "shadow-none"
             )}
           >
@@ -91,29 +93,35 @@ export const Navigation = ({
   const locale = useLocale();
 
   return (
-    <div className="hidden sm:block px-4 sm:px-6 lg:pr-0">
-      <NavigationMenu orientation="horizontal" className="">
-        <NavigationMenuList className="flex justify-between items-center gap-3">
-          {items.map((item) => {
-            const isActive =
-              (pathname.split("/")[2] ?? "") === item.href.split("/")[1];
+    <div className="flex items-center px-4 sm:px-6 lg:pr-0 gap-10">
+      <div className="bg-primary flex justify-center items-center py-3 px-4 rounded-xl shadow">
+        <Image src={Logo} alt="denn.place logo" className="w-24 sm:w-32" />
+      </div>
 
-            return (
-              <NavigationMenuItem
-                key={item.href}
-                className={classNames(
-                  "font-semibold py-2 rounded-xl px-4 text-sm",
-                  isActive ? "text-black bg-white" : "text-white"
-                )}
-              >
-                <Link href={item.href} className="py-4" locale={locale}>
-                  {item.name}
-                </Link>
-              </NavigationMenuItem>
-            );
-          })}
-        </NavigationMenuList>
-      </NavigationMenu>
+      <div className="hidden sm:block">
+        <NavigationMenu orientation="horizontal" className="">
+          <NavigationMenuList className="flex justify-between items-center gap-3">
+            {items.map((item) => {
+              const isActive =
+                (pathname.split("/")[2] ?? "") === item.href.split("/")[1];
+
+              return (
+                <NavigationMenuItem
+                  key={item.href}
+                  className={classNames(
+                    "font-semibold py-2 rounded-xl px-4 text-sm text-secondary",
+                    isActive ? "bg-primary" : ""
+                  )}
+                >
+                  <Link href={item.href} className="py-4" locale={locale}>
+                    {item.name}
+                  </Link>
+                </NavigationMenuItem>
+              );
+            })}
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
     </div>
   );
 };

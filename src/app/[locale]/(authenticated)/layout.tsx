@@ -42,7 +42,7 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
       </header>
       <main className="flex flex-col lg:flex-row h-full gap-4 lg:gap-12">
         <div className="flex justify-between px-4 items-center sm:px-6 lg:items-start lg:flex-col lg:justify-normal gap-4 lg:pr-0">
-          <div className="text-white font-medium text-lg">
+          <div className="text-secondary font-medium text-lg">
             <p>{t("welcome")}</p>
             <h1>{t("here-and-rsquo-s-what-and-rsquo-s-happening")}</h1>
 

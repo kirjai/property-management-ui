@@ -130,7 +130,7 @@ export const Calendar = ({
                       dateTime={day.formattedDate}
                       className={
                         day.isToday
-                          ? "flex h-6 w-6 items-center justify-center rounded-full bg-primary font-semibold text-white"
+                          ? "flex h-6 w-6 items-center justify-center rounded-full bg-secondary font-semibold text-white"
                           : undefined
                       }
                     >
@@ -211,7 +211,7 @@ export const Calendar = ({
                     day.isCurrentMonth ? "bg-white" : "bg-stone-50",
                     (day.isSelected || day.isToday) && "font-semibold",
                     day.isSelected && "text-white",
-                    !day.isSelected && day.isToday && "text-primary",
+                    // !day.isSelected && day.isToday && "text-primary",
                     !day.isSelected &&
                       day.isCurrentMonth &&
                       !day.isToday &&
@@ -228,7 +228,9 @@ export const Calendar = ({
                     className={classNames(
                       day.isSelected &&
                         "flex h-6 w-6 items-center justify-center rounded-full",
-                      day.isSelected && day.isToday && "bg-primary",
+                      day.isSelected &&
+                        day.isToday &&
+                        "bg-primary text-secondary",
                       day.isSelected && !day.isToday && "bg-stone-900",
                       "ml-auto"
                     )}

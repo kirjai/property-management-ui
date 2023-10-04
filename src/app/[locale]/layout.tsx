@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang={locale}>
       <body
-        className={`${inter.className} bg-primary supports-[height:100cqh]:h-[100cqh] supports-[height:100svh]:h-[100svh]`}
+        className={`${inter.className} bg-white supports-[height:100cqh]:h-[100cqh] supports-[height:100svh]:h-[100svh]`}
       >
         {children}
       </body>

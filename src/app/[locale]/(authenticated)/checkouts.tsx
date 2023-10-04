@@ -7,6 +7,7 @@ import Color from "color";
 import { AlertCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { supabaseClientOptions } from "@/supabase/supabase";
+import classNames from "classnames";
 
 export const Checkouts = async ({
   date,
@@ -118,15 +119,14 @@ export const Checkouts = async ({
                         return (
                           <div
                             key={checkout.event_id}
-                            className={`${
+                            className={classNames(
+                              "text-sm px-4 py-2 font-medium",
+                              isDark && !isToday ? "text-white" : "text-black",
+                              !checkout.property_color ? "bg-stone-400" : "",
                               isToday
                                 ? "bg-primary shadow-md shadow-primary"
                                 : ""
-                            } ${
-                              isDark ? "text-white" : "text-black"
-                            } px-4 py-2 text-sm font-medium ${
-                              !checkout.property_color ? "bg-stone-400" : ""
-                            }`}
+                            )}
                             style={{
                               backgroundColor: !isToday
                                 ? checkout.property_color ?? undefined
