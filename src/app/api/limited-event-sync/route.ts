@@ -14,6 +14,7 @@ import { fromFPTSOption } from "@/lib/option";
 import isBefore from "date-fns/isBefore";
 import isAfter from "date-fns/isAfter";
 import format from "date-fns/format";
+import { pathExistsSync } from "fs-extra";
 
 export const dynamic = "force-dynamic";
 
@@ -235,11 +236,27 @@ const bookingFilter: EventsFilterFunction = (webEvent) => {
   return summary.toLowerCase() !== "CLOSED - Not available".toLowerCase();
 };
 
+const getCalendar = (propertyPlatform: any) => {
+  const filePath = `./${propertyPlatform.property}-${propertyPlatform.platform}.ics`;
+  if (pathExistsSync(filePath)) {
+    console.log("Getting calendar from file", filePath);
+    return Effect.promise(async () => ical.sync.parseFile(filePath));
+  } else {
+    return Effect.tryPromise({
+      try: (): Promise<ical.CalendarResponse> =>
+        // @ts-expect-error
+        ical.async.fromURL(propertyPlatform.calendar_url, {
+          headers: {
+            "User-Agent": "robot <booking-ua-contact.vdjfd@simplelogin.com>",
+          },
+        }),
+      catch: (error) => new QueryCalendarError(error, propertyPlatform.id),
+    });
+  }
+};
+
 const getCalendarEventsForPropertyPlatform = (propertyPlatform: any) => {
-  return Effect.tryPromise({
-    try: () => ical.async.fromURL(propertyPlatform.calendar_url),
-    catch: (error) => new QueryCalendarError(error, propertyPlatform.id),
-  }).pipe(
+  return getCalendar(propertyPlatform).pipe(
     Effect.map((response) => {
       const filterFunction =
         propertyPlatform.hosting_platforms.name === "Airbnb"
